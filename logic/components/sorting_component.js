@@ -11,13 +11,17 @@ export class SortingVisualizer {
   #isFirstObservation = true;
 
   constructor(...nums) {
-    if (nums.length < 1) {
+    if (nums.length < 2) {
       throw new Error('Cannot be less than two bars.');
+    }
+
+    if (!nums.every(n => typeof n === 'number' && !isNaN(n))) {
+      throw new Error('All values must be numbers.');
     }
 
     this.#nums = nums;
     this.#initializeDOM();
-    this.#setupResizeObsever();
+    this.#setupResizeObserver();
   }
 
   #initializeDOM() {
@@ -31,7 +35,7 @@ export class SortingVisualizer {
     this.container.appendChild(this.#board);
   }
 
-  #setupResizeObsever() {
+  #setupResizeObserver() {
     this.#resizeObserver = new ResizeObserver(entries => {
       this.#handleResizing(entries);
     })
