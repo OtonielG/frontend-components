@@ -75,6 +75,7 @@ export class SortingVisualizer {
   #newBar(index, width, moveToX) {
     const bar = document.createElement('div');
     bar.classList.add('bar');
+    bar.dataset.index = index;
     bar.style.setProperty('--h', this.#nums[index]);
     bar.style.setProperty('--w', `${width}px`);
     bar.style.setProperty('--position', `${index * moveToX}px`);
@@ -84,6 +85,7 @@ export class SortingVisualizer {
   #updateSizing() {
     const [barWidth, moveToX] = this.#calculateDimensions();
     this.#bars.forEach((bar, index) => {
+      bar.dataset.index = index;
       bar.style.setProperty('--w', `${barWidth}px`);
       bar.style.setProperty('--position', `${index * moveToX}px`);
     });
@@ -102,6 +104,22 @@ export class SortingVisualizer {
     const bar = this.#newBar(index, barW, moveToX);
     this.#board.append(bar);
     this.#bars.push(bar);
+    this.#updateSizing();
+  }
+
+  removeValue(value) {
+    const index = this.#nums.indexOf(value);
+    if (index < 0) {
+      throw new Error('Value was not found.');
+    }
+
+    this.#nums.splice(index, 1);
+
+    const bar = this.#bars[index];
+    if (bar) bar.remove();
+    this.#bars.splice(index, 1);
+
+    this.#board.style.setProperty('--maxH', Math.max(...this.#nums));
     this.#updateSizing();
   }
 }
