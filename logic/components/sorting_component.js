@@ -122,4 +122,48 @@ export class SortingVisualizer {
     this.#board.style.setProperty('--maxH', Math.max(...this.#nums));
     this.#updateSizing();
   }
+
+  async bubbleSort() {
+
+    for (let i = 0; i < this.#nums.length; i++) {
+      let swap = false;
+      for (let j = 0; j < this.#nums.length - 1 - i; j++) {
+        const left = this.#bars[j];
+        const right = this.#bars[j + 1];
+
+        left.classList.add('active');
+        right.classList.add('active');
+
+        if (this.#nums[j] > this.#nums[j + 1]) {
+          [this.#nums[j], this.#nums[j + 1]] = [this.#nums[j + 1], this.#nums[j]];
+
+          this.#swap(left, right, j, j + 1);
+
+          [this.#bars[j], this.#bars[j + 1]] = [this.#bars[j + 1], this.#bars[j]];
+          swap = true;
+        }
+
+        await this.#sleep(400);
+
+        left.classList.remove('active');
+        right.classList.remove('active');
+      }
+
+      if (!swap) break;
+    }
+  }
+  
+  #swap(firstB, secondB, previous, next) {
+    const [barWidth, moveToX] = this.#calculateDimensions();
+
+    firstB.style.setProperty('--position', `${next * moveToX}px`);
+    firstB.dataset.index = next;
+
+    secondB.style.setProperty('--position', `${previous * moveToX}px`);
+    secondB.dataset.index = previous;
+  }
+
+  #sleep(delay) {
+    return new Promise(resolve => setTimeout(resolve, delay));
+  }
 }

@@ -11,6 +11,5 @@ valueEl.addEventListener('keydown', (e) => {
   const key = e.key;
   if (key !== 'Enter') return;
 
-  const value = Number(valueEl.value);
-  sorting.removeValue(value);
+  sorting.bubbleSort();
 })

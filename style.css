@@ -19,6 +19,7 @@ body {
   width: min(100%, 500px);
   aspect-ratio: 16/9;
   background-color: lightpink;
+  overflow: hidden;
 }
 
 .board {
@@ -34,4 +35,9 @@ body {
   width: var(--w);
   transform: translateX(var(--position));
   background-color: red;
+  transition: transform 0.3s ease;
+}
+
+.active {
+  border: 2px solid black;
 }
