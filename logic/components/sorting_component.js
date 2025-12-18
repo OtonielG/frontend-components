@@ -137,13 +137,13 @@ export class SortingVisualizer {
         if (this.#nums[j] > this.#nums[j + 1]) {
           [this.#nums[j], this.#nums[j + 1]] = [this.#nums[j + 1], this.#nums[j]];
 
-          this.#swap(left, right, j, j + 1);
+          this.#swap(left, j + 1, right, j);
 
           [this.#bars[j], this.#bars[j + 1]] = [this.#bars[j + 1], this.#bars[j]];
           swap = true;
         }
 
-        await this.#sleep(400);
+        await this.#sleep(500);
 
         left.classList.remove('active');
         right.classList.remove('active');
@@ -152,12 +152,57 @@ export class SortingVisualizer {
       if (!swap) break;
     }
   }
+
+  async insertionSort() {
+    
+    for (let i = 1; i < this.#nums.length; i++) {
+      let tempNums = this.#nums[i];
+      let tempBars = this.#bars[i];
+      let j = i;
+      let swap = false;
+
+      while(j > 0 && this.#nums[j - 1] > tempNums) {
+        const left = this.#bars[j - 1];
+        const right = this.#bars[j];
+
+        left.classList.add('active');
+        right.classList.add('active');
+
+        this.#nums[j] = this.#nums[j - 1];
+        this.#bars[j] = this.#bars[j - 1];
+        this.#swap(this.#bars[j], j, tempBars, j - 1);
+        
+        await this.#sleep(500);
+
+        left.classList.remove('active');
+        right.classList.remove('active');
+
+        swap = true;
+        j--;
+      }
+
+      if (j > 0 && !swap) {
+        const left = this.#bars[j - 1];
+        left.classList.add('active');
+        await this.#sleep(500);
+        left.classList.remove('active');
+      }
+
+      this.#nums[j] = tempNums;
+      this.#bars[j] = tempBars;
+      this.#swap(tempBars, j);
+
+      await this.#sleep(500);
+    }
+  }
   
-  #swap(firstB, secondB, previous, next) {
+  #swap(firstB, next, secondB, previous) {
     const [barWidth, moveToX] = this.#calculateDimensions();
 
     firstB.style.setProperty('--position', `${next * moveToX}px`);
     firstB.dataset.index = next;
+
+    if (!secondB) return;
 
     secondB.style.setProperty('--position', `${previous * moveToX}px`);
     secondB.dataset.index = previous;
