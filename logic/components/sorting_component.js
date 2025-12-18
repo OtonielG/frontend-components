@@ -143,7 +143,7 @@ export class SortingVisualizer {
           swap = true;
         }
 
-        await this.#sleep(500);
+        await this.#sleep(400);
 
         left.classList.remove('active');
         right.classList.remove('active');
@@ -172,7 +172,7 @@ export class SortingVisualizer {
         this.#bars[j] = this.#bars[j - 1];
         this.#swap(this.#bars[j], j, tempBars, j - 1);
         
-        await this.#sleep(500);
+        await this.#sleep(400);
 
         left.classList.remove('active');
         right.classList.remove('active');
@@ -184,7 +184,7 @@ export class SortingVisualizer {
       if (j > 0 && !swap) {
         const left = this.#bars[j - 1];
         left.classList.add('active');
-        await this.#sleep(500);
+        await this.#sleep(400);
         left.classList.remove('active');
       }
 
@@ -192,7 +192,7 @@ export class SortingVisualizer {
       this.#bars[j] = tempBars;
       this.#swap(tempBars, j);
 
-      await this.#sleep(500);
+      await this.#sleep(400);
     }
   }
 
@@ -213,7 +213,7 @@ export class SortingVisualizer {
           index = j;
         }
 
-        await this.#sleep(500);
+        await this.#sleep(400);
 
         left.classList.remove('active');
         right.classList.remove('active');
@@ -228,7 +228,7 @@ export class SortingVisualizer {
       [this.#bars[i], this.#bars[index]] = [this.#bars[index], this.#bars[i]];
       
 
-      await this.#sleep(500);
+      await this.#sleep(400);
     } 
   }
   
