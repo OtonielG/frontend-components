@@ -11,5 +11,5 @@ valueEl.addEventListener('keydown', (e) => {
   const key = e.key;
   if (key !== 'Enter') return;
 
-  sorting.insertionSort();
+  sorting.selectionSort();
 })

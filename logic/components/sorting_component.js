@@ -195,6 +195,42 @@ export class SortingVisualizer {
       await this.#sleep(500);
     }
   }
+
+  async selectionSort() {
+    for (let i = 0; i < this.#nums.length; i++) {
+      let min = this.#nums[i];
+      let index = i;
+
+      for (let j = i + 1; j < this.#nums.length; j++) {
+        const left = this.#bars[index];
+        const right = this.#bars[j];
+
+        left.classList.add('active');
+        right.classList.add('active');
+
+        if (this.#nums[j] < min) {
+          min = this.#nums[j];
+          index = j;
+        }
+
+        await this.#sleep(500);
+
+        left.classList.remove('active');
+        right.classList.remove('active');
+      }
+
+      if (index === i) continue;
+      
+      [this.#nums[i], this.#nums[index]] = [this.#nums[index], this.#nums[i]];
+      
+      this.#swap(this.#bars[i], index, this.#bars[index], i);
+      
+      [this.#bars[i], this.#bars[index]] = [this.#bars[index], this.#bars[i]];
+      
+
+      await this.#sleep(500);
+    } 
+  }
   
   #swap(firstB, next, secondB, previous) {
     const [barWidth, moveToX] = this.#calculateDimensions();
