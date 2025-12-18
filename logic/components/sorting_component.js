@@ -6,6 +6,7 @@ export class SortingVisualizer {
   #bars = [];
   #resizeObserver;
   #isFirstObservation = true;
+  #isInProcess = false;
 
   constructor(...nums) {
     if (nums.length < 2) {
@@ -125,6 +126,9 @@ export class SortingVisualizer {
 
   async bubbleSort() {
 
+    if (this.#isInProcess) return;
+    this.#isInProcess = true;
+
     for (let i = 0; i < this.#nums.length; i++) {
       let swap = false;
       for (let j = 0; j < this.#nums.length - 1 - i; j++) {
@@ -136,10 +140,9 @@ export class SortingVisualizer {
 
         if (this.#nums[j] > this.#nums[j + 1]) {
           [this.#nums[j], this.#nums[j + 1]] = [this.#nums[j + 1], this.#nums[j]];
-
           this.#swap(left, j + 1, right, j);
-
           [this.#bars[j], this.#bars[j + 1]] = [this.#bars[j + 1], this.#bars[j]];
+
           swap = true;
         }
 
@@ -151,9 +154,14 @@ export class SortingVisualizer {
 
       if (!swap) break;
     }
+
+    this.#isInProcess = false;
   }
 
   async insertionSort() {
+
+    if (this.#isInProcess) return;
+    this.#isInProcess = true;
     
     for (let i = 1; i < this.#nums.length; i++) {
       let tempNums = this.#nums[i];
@@ -194,9 +202,15 @@ export class SortingVisualizer {
 
       await this.#sleep(400);
     }
+
+    this.#isInProcess = false;
   }
 
   async selectionSort() {
+
+    if (this.#isInProcess) return;
+    this.#isInProcess = true;
+
     for (let i = 0; i < this.#nums.length; i++) {
       let min = this.#nums[i];
       let index = i;
@@ -230,6 +244,57 @@ export class SortingVisualizer {
 
       await this.#sleep(400);
     } 
+
+    this.#isInProcess = false;
+  }
+
+  async quickSort() {
+    if (this.#isInProcess) return;
+    this.#isInProcess = true;
+    console.log(this.#nums);
+    console.log(this.#bars);
+    await this.#executeQuickSort();
+    console.log(this.#nums);
+    console.log(this.#bars);
+    this.#isInProcess = false;
+  }
+
+  async #executeQuickSort(left = 0, right = this.#nums.length - 1) {
+    if (left >= right) return;
+
+    const partition = async (left, right) => {
+      let pivotNumber = this.#nums[right];
+      let i = left - 1;
+      let j = left;
+
+      while(j < right) {
+        if (this.#nums[j] < pivotNumber) {
+          i++;
+          [this.#nums[i], this.#nums[j]] = [this.#nums[j], this.#nums[i]];
+          this.#swap(this.#bars[i], j, this.#bars[j], i);
+          [this.#bars[i], this.#bars[j]] = [this.#bars[j], this.#bars[i]];
+
+          await this.#sleep(1000);
+        }
+
+        j++;
+      }
+
+      i++;
+
+      [this.#nums[i], this.#nums[right]] = [this.#nums[right], this.#nums[i]];
+      this.#swap(this.#bars[i], right, this.#bars[right], i);
+      [this.#bars[i], this.#bars[right]] = [this.#bars[right], this.#bars[i]];
+
+      await this.#sleep(1000);
+
+      return i;
+    }
+
+    let pi = await partition(left, right);
+
+    await this.#executeQuickSort(left, pi - 1);
+    await this.#executeQuickSort(pi + 1, right);
   }
   
   #swap(firstB, next, secondB, previous) {
