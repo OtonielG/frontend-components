@@ -59,9 +59,10 @@ button:hover {
 }
 
 .bar.active {
-  border: 2px solid black;
+  background-color: black;
 }
 
-.sorted {
-  background-color: greenyellow;
+.selected,
+.pivot {
+  background-color: lightseagreen;
 }
