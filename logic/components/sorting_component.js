@@ -129,6 +129,8 @@ export class SortingVisualizer {
     if (this.#isInProcess) return;
     this.#isInProcess = true;
 
+    this.#clearStates();
+
     for (let i = 0; i < this.#nums.length; i++) {
       let swap = false;
       for (let j = 0; j < this.#nums.length - 1 - i; j++) {
@@ -152,14 +154,7 @@ export class SortingVisualizer {
         right.classList.remove('active');
       }
 
-      this.#bars[this.#bars.length - 1 - i].classList.add('sorted');
-
-      if (!swap) {
-        for (let k = 0; k < this.#bars.length - i; k++) {
-          this.#bars[k].classList.add('sorted');
-        }
-        break;
-      }
+      if (!swap) break;
     }
 
     this.#isInProcess = false;
@@ -169,6 +164,8 @@ export class SortingVisualizer {
 
     if (this.#isInProcess) return;
     this.#isInProcess = true;
+
+    this.#clearStates();
     
     for (let i = 1; i < this.#nums.length; i++) {
       let tempNums = this.#nums[i];
@@ -219,6 +216,8 @@ export class SortingVisualizer {
     if (this.#isInProcess) return;
     this.#isInProcess = true;
 
+    this.#clearStates();
+
     for (let i = 0; i < this.#nums.length; i++) {
       let min = this.#nums[i];
       let index = i;
@@ -227,7 +226,7 @@ export class SortingVisualizer {
         const left = this.#bars[index];
         const right = this.#bars[j];
 
-        left.classList.add('active');
+        left.classList.add('selected');
         right.classList.add('active');
 
         if (this.#nums[j] < min) {
@@ -237,7 +236,7 @@ export class SortingVisualizer {
 
         await this.#sleep();
 
-        left.classList.remove('active');
+        left.classList.remove('selected');
         right.classList.remove('active');
       }
 
@@ -259,6 +258,7 @@ export class SortingVisualizer {
   async quickSort() {
     if (this.#isInProcess) return;
     this.#isInProcess = true;
+    this.#clearStates();
     await this.#executeQuickSort();
     this.#isInProcess = false;
   }
@@ -267,38 +267,137 @@ export class SortingVisualizer {
     if (left >= right) return;
 
     const partition = async (left, right) => {
+      const pivotBar = this.#bars[right];
+      pivotBar.classList.add('pivot');
+
       let pivotNumber = this.#nums[right];
       let i = left - 1;
       let j = left;
 
-      while(j < right) {
+      while (j < right) {
+        const currentBar = this.#bars[j];
+        currentBar.classList.add('active');
+
         if (this.#nums[j] < pivotNumber) {
           i++;
           [this.#nums[i], this.#nums[j]] = [this.#nums[j], this.#nums[i]];
           this.#swap(this.#bars[i], j, this.#bars[j], i);
           [this.#bars[i], this.#bars[j]] = [this.#bars[j], this.#bars[i]];
-
-          await this.#sleep();
         }
 
+        await this.#sleep();
+        currentBar.classList.remove('active');
         j++;
       }
 
       i++;
 
       [this.#nums[i], this.#nums[right]] = [this.#nums[right], this.#nums[i]];
-      this.#swap(this.#bars[i], right, this.#bars[right], i);
+      this.#swap(this.#bars[i], right, pivotBar, i);
       [this.#bars[i], this.#bars[right]] = [this.#bars[right], this.#bars[i]];
 
       await this.#sleep();
+      pivotBar.classList.remove('pivot');
 
       return i;
-    }
+    };
+
 
     let pi = await partition(left, right);
 
     await this.#executeQuickSort(left, pi - 1);
     await this.#executeQuickSort(pi + 1, right);
+  }
+
+  async mergeSort() {
+    if (this.#isInProcess) return;
+    this.#isInProcess = true;
+
+    try {
+      this.#clearStates();
+      const aux = this.#nums.slice();
+      await this.#executeMergeSort(0, this.#nums.length - 1, aux);
+
+    } finally {
+      this.#isInProcess = false;
+    }
+  }
+
+  async #executeMergeSort(left = 0, right = this.#nums.length - 1, aux = this.#nums.slice()) {
+    if (left >= right) return;
+
+    const mid = Math.floor((left + right) / 2);
+
+    await this.#executeMergeSort(left, mid, aux);
+    await this.#executeMergeSort(mid + 1, right, aux);
+
+    for (let i = left; i <= right; i++) {
+      aux[i] = this.#nums[i];
+    }
+
+    let i = left;
+    let j = mid + 1;
+    let k = left;
+
+    while (i <= mid && j <= right) {
+      const leftBar = this.#bars[i];
+      const rightBar = this.#bars[j];
+      const writeBar = this.#bars[k];
+
+      leftBar.classList.add('active');
+      rightBar.classList.add('active');
+      writeBar.classList.add('active');
+
+      if (aux[i] <= aux[j]) {
+        this.#nums[k] = aux[i];
+        writeBar.style.setProperty('--h', aux[i]);
+        i++;
+      } else {
+        this.#nums[k] = aux[j];
+        writeBar.style.setProperty('--h', aux[j]);
+        j++;
+      }
+
+      await this.#sleep();
+
+      leftBar.classList.remove('active');
+      rightBar.classList.remove('active');
+      writeBar.classList.remove('active');
+
+      k++;
+    }
+
+    while (i <= mid) {
+      this.#bars[i].classList.add('active');
+      this.#bars[k].classList.add('active');
+
+      this.#nums[k] = aux[i];
+      this.#bars[k].style.setProperty('--h', aux[i]);
+
+      await this.#sleep();
+
+      this.#bars[i].classList.remove('active');
+      this.#bars[k].classList.remove('active');
+
+      i++;
+      k++;
+    }
+
+    while (j <= right) {
+      this.#bars[j].classList.add('active');
+      this.#bars[k].classList.add('active');
+
+      this.#nums[k] = aux[j];
+      this.#bars[k].style.setProperty('--h', aux[j]);
+
+      await this.#sleep();
+
+      this.#bars[j].classList.remove('active');
+      this.#bars[k].classList.remove('active');
+
+      j++;
+      k++;
+    }
   }
   
   #swap(firstB, next, secondB, previous) {
@@ -313,7 +412,11 @@ export class SortingVisualizer {
     secondB.dataset.index = previous;
   }
 
+  #clearStates() {
+    this.#bars.forEach(b => b.classList.remove('active', 'selected', 'pivot'));
+  }
+
   #sleep() {
-    return new Promise(resolve => setTimeout(resolve, 500));
+    return new Promise(resolve => setTimeout(resolve, 20));
   }
 }
