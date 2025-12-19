@@ -155,9 +155,8 @@ export class SortingVisualizer {
       this.#bars[this.#bars.length - 1 - i].classList.add('sorted');
 
       if (!swap) {
-        while (i >= 0) {
-          this.#bars[this.#bars.length - 1 - i].classList.add('sorted');
-          i++;
+        for (let k = 0; k < this.#bars.length - i; k++) {
+          this.#bars[k].classList.add('sorted');
         }
         break;
       }

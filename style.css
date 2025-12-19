@@ -53,11 +53,12 @@ button:hover {
   height: calc(85% * var(--h) / var(--maxH));
   width: var(--w);
   transform: translateX(var(--position));
+  border-radius: 8px 8px 0 0;
   background-color: red;
   transition: transform 0.3s ease;
 }
 
-.active {
+.bar.active {
   border: 2px solid black;
 }
 
