@@ -60,3 +60,7 @@ button:hover {
 .active {
   border: 2px solid black;
 }
+
+.sorted {
+  background-color: greenyellow;
+}

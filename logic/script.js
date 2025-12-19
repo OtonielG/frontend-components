@@ -4,6 +4,7 @@ const bubbleBtn = document.querySelector('.bubble-js');
 const insertionBtn = document.querySelector('.insertion-js');
 const selectionBtn = document.querySelector('.selection-js');
 const quickBtn = document.querySelector('.quick-js');
+const mergeBtn = document.querySelector('.merge-js');
 
 const sorting = new SortingVisualizer(8, 2, 4, 7, 1, 3, 9, 6, 5);
 document.body.append(sorting.container);
@@ -19,4 +20,7 @@ selectionBtn.addEventListener('click', () => {
 });
 quickBtn.addEventListener('click', () => {
   sorting.quickSort();
+})
+mergeBtn.addEventListener('click', () => {
+  sorting.mergeSort();
 })
