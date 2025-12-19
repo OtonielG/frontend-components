@@ -300,51 +300,6 @@ export class SortingVisualizer {
     await this.#executeQuickSort(left, pi - 1);
     await this.#executeQuickSort(pi + 1, right);
   }
-
-  async mergeSort() {
-    if (this.#isInProcess) return;
-    this.#isInProcess = true;
-    this.#nums = await this.#executeMergeSort();
-    this.#isInProcess = false;
-  }
-
-  async #executeMergeSort(arr = this.#nums) {
-    if (arr.length <= 1) return arr;
-
-    let mid = Math.floor(arr.length / 2);
-    let left = await this.#executeMergeSort(arr.slice(0, mid));
-    let right = await this.#executeMergeSort(arr.slice(mid));
-
-    function merge(left, right) {
-      let newArr = [];
-      let i = 0;
-      let j = 0;
-
-      while(i < left.length && j < right.length) {
-        if (left[i] <= right[j]) {
-          newArr.push(left[i]);
-          i++;
-        } else {
-          newArr.push(right[j]);
-          j++;
-        }
-      }
-
-      while(i < left.length) {
-        newArr.push(left[i]);
-        i++;
-      } 
-
-      while(j < right.length) {
-        newArr.push(right[j]);
-        j++;
-      }
-
-      return newArr;
-    }
-    
-    return merge(left, right);
-  }
   
   #swap(firstB, next, secondB, previous) {
     const [barWidth, moveToX] = this.#calculateDimensions();
