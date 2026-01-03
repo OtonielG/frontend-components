@@ -42,12 +42,17 @@ button:hover {
 }
 
 .board {
-  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 2rem;
   width: 100%;
   height: 100%;
+  background-color: lightgreen;
 }
 
-.bar {
+/* .bar {
   position: absolute;
   bottom: 0;
   height: calc(85% * var(--h) / var(--maxH));
@@ -65,4 +70,13 @@ button:hover {
 .selected,
 .pivot {
   background-color: lightseagreen;
+} */
+
+.tile {
+  height: 3rem;
+  width: 3rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: lightblue;
 }
