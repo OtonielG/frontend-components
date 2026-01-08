@@ -93,6 +93,8 @@ export class SortingVisualizer {
   }
 
   addNewValue(value) {
+    if (this.#isInProcess) throw new Error('Cannot modify while sorting.');
+
     if (typeof value !== 'number' || Number.isNaN(value)) {
       throw new Error('Value must be a number.');
     }
@@ -109,6 +111,8 @@ export class SortingVisualizer {
   }
 
   removeValue(value) {
+    if (this.#isInProcess) throw new Error('Cannot modify while sorting.');
+
     const index = this.#nums.indexOf(value);
     if (index < 0) {
       throw new Error('Value was not found.');
