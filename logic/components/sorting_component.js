@@ -29,7 +29,7 @@ export class SortingVisualizer {
     this.#board = document.createElement('div');
     this.#board.classList.add('board');
     this.#board.style.setProperty('--maxH', Math.max(...this.#nums));
-  
+
     this.container.appendChild(this.#board);
   }
 
@@ -52,7 +52,7 @@ export class SortingVisualizer {
 
   #createBars() {
     this.#board.replaceChildren();
-    this.#bars = []; 
+    this.#bars = [];
 
     const [barW, moveToX] = this.#calculateDimensions();
 
@@ -125,142 +125,157 @@ export class SortingVisualizer {
   }
 
   async bubbleSort() {
-
     if (this.#isInProcess) return;
     this.#isInProcess = true;
 
     this.#clearStates();
 
-    for (let i = 0; i < this.#nums.length; i++) {
-      let swap = false;
-      for (let j = 0; j < this.#nums.length - 1 - i; j++) {
-        const left = this.#bars[j];
-        const right = this.#bars[j + 1];
+    try {
+      for (let i = 0; i < this.#nums.length; i++) {
+        let swap = false;
 
-        left.classList.add('active');
-        right.classList.add('active');
+        for (let j = 0; j < this.#nums.length - 1 - i; j++) {
+          const left = this.#bars[j];
+          const right = this.#bars[j + 1];
 
-        if (this.#nums[j] > this.#nums[j + 1]) {
-          [this.#nums[j], this.#nums[j + 1]] = [this.#nums[j + 1], this.#nums[j]];
-          this.#swap(left, j + 1, right, j);
-          [this.#bars[j], this.#bars[j + 1]] = [this.#bars[j + 1], this.#bars[j]];
+          if (!left || !right) throw new Error('Bars out of sync.');
 
-          swap = true;
+          left.classList.add('active');
+          right.classList.add('active');
+
+          if (this.#nums[j] > this.#nums[j + 1]) {
+            [this.#nums[j], this.#nums[j + 1]] = [this.#nums[j + 1], this.#nums[j]];
+            this.#swap(left, j + 1, right, j);
+            [this.#bars[j], this.#bars[j + 1]] = [this.#bars[j + 1], this.#bars[j]];
+            swap = true;
+          }
+
+          await this.#sleep();
+
+          left.classList.remove('active');
+          right.classList.remove('active');
         }
 
-        await this.#sleep();
-
-        left.classList.remove('active');
-        right.classList.remove('active');
+        if (!swap) break;
       }
-
-      if (!swap) break;
+    } catch (err) {
+      console.error('bubbleSort failed:', err);
+    } finally {
+      this.#clearStates();
+      this.#isInProcess = false;
     }
-
-    this.#isInProcess = false;
   }
 
   async insertionSort() {
-
     if (this.#isInProcess) return;
     this.#isInProcess = true;
 
     this.#clearStates();
-    
-    for (let i = 1; i < this.#nums.length; i++) {
-      let tempNums = this.#nums[i];
-      let tempBars = this.#bars[i];
-      let j = i;
-      let swap = false;
 
-      while(j > 0 && this.#nums[j - 1] > tempNums) {
-        const left = this.#bars[j - 1];
-        const right = this.#bars[j];
+    try {
+      for (let i = 1; i < this.#nums.length; i++) {
+        const tempNums = this.#nums[i];
+        const tempBars = this.#bars[i];
+        let j = i;
 
-        left.classList.add('active');
-        right.classList.add('active');
+        if (!tempBars) throw new Error('Bars out of sync.');
 
-        this.#nums[j] = this.#nums[j - 1];
-        this.#bars[j] = this.#bars[j - 1];
-        this.#swap(this.#bars[j], j, tempBars, j - 1);
-        
+        while (j > 0 && this.#nums[j - 1] > tempNums) {
+          const left = this.#bars[j - 1];
+          const right = this.#bars[j];
+
+          if (!left || !right) throw new Error('Bars out of sync.');
+
+          left.classList.add('active');
+          right.classList.add('active');
+
+          this.#nums[j] = this.#nums[j - 1];
+          this.#bars[j] = this.#bars[j - 1];
+
+          this.#swap(this.#bars[j], j, tempBars, j - 1);
+
+          await this.#sleep();
+
+          left.classList.remove('active');
+          right.classList.remove('active');
+
+          j--;
+        }
+
+        this.#nums[j] = tempNums;
+        this.#bars[j] = tempBars;
+
+        this.#swap(tempBars, j);
+
         await this.#sleep();
-
-        left.classList.remove('active');
-        right.classList.remove('active');
-
-        swap = true;
-        j--;
       }
-
-      if (j > 0 && !swap) {
-        const left = this.#bars[j - 1];
-        left.classList.add('active');
-        await this.#sleep();
-        left.classList.remove('active');
-        continue;
-      }
-
-      this.#nums[j] = tempNums;
-      this.#bars[j] = tempBars;
-      this.#swap(tempBars, j);
-
-      await this.#sleep();
+    } catch (err) {
+      console.error('insertionSort failed:', err);
+    } finally {
+      this.#clearStates();
+      this.#isInProcess = false;
     }
-
-    this.#isInProcess = false;
   }
 
   async selectionSort() {
-
     if (this.#isInProcess) return;
     this.#isInProcess = true;
 
     this.#clearStates();
 
-    for (let i = 0; i < this.#nums.length; i++) {
-      let min = this.#nums[i];
-      let index = i;
+    try {
+      for (let i = 0; i < this.#nums.length; i++) {
+        let minIndex = i;
 
-      for (let j = i + 1; j < this.#nums.length; j++) {
-        const left = this.#bars[index];
-        const right = this.#bars[j];
+        for (let j = i + 1; j < this.#nums.length; j++) {
+          const selectedBar = this.#bars[minIndex];
+          const currentBar = this.#bars[j];
 
-        left.classList.add('selected');
-        right.classList.add('active');
+          if (!selectedBar || !currentBar) throw new Error('Bars out of sync.');
 
-        if (this.#nums[j] < min) {
-          min = this.#nums[j];
-          index = j;
+          selectedBar.classList.add('selected');
+          currentBar.classList.add('active');
+
+          if (this.#nums[j] < this.#nums[minIndex]) {
+            minIndex = j;
+          }
+
+          await this.#sleep();
+
+          selectedBar.classList.remove('selected');
+          currentBar.classList.remove('active');
         }
 
+        if (minIndex === i) continue;
+
+        [this.#nums[i], this.#nums[minIndex]] = [this.#nums[minIndex], this.#nums[i]];
+        this.#swap(this.#bars[i], minIndex, this.#bars[minIndex], i);
+        [this.#bars[i], this.#bars[minIndex]] = [this.#bars[minIndex], this.#bars[i]];
+
         await this.#sleep();
-
-        left.classList.remove('selected');
-        right.classList.remove('active');
       }
-
-      if (index === i) continue;
-      
-      [this.#nums[i], this.#nums[index]] = [this.#nums[index], this.#nums[i]];
-      
-      this.#swap(this.#bars[i], index, this.#bars[index], i);
-      
-      [this.#bars[i], this.#bars[index]] = [this.#bars[index], this.#bars[i]];
-      
-
-      await this.#sleep();
-    } 
-
-    this.#isInProcess = false;
+    } catch (err) {
+      console.error('selectionSort failed:', err);
+    } finally {
+      this.#clearStates();
+      this.#isInProcess = false;
+    }
   }
 
   async quickSort() {
     if (this.#isInProcess) return;
     this.#isInProcess = true;
+
     this.#clearStates();
-    await this.#executeQuickSort();
-    this.#isInProcess = false;
+
+    try {
+      await this.#executeQuickSort();
+    } catch (err) {
+      console.error('quickSort failed:', err);
+    } finally {
+      this.#clearStates();
+      this.#isInProcess = false;
+    }
   }
 
   async #executeQuickSort(left = 0, right = this.#nums.length - 1) {
@@ -313,12 +328,15 @@ export class SortingVisualizer {
     if (this.#isInProcess) return;
     this.#isInProcess = true;
 
+    this.#clearStates();
+
     try {
-      this.#clearStates();
       const aux = this.#nums.slice();
       await this.#executeMergeSort(0, this.#nums.length - 1, aux);
-
+    } catch (err) {
+      console.error('mergeSort failed:', err);
     } finally {
+      this.#clearStates();
       this.#isInProcess = false;
     }
   }
@@ -399,7 +417,7 @@ export class SortingVisualizer {
       k++;
     }
   }
-  
+
   #swap(firstB, next, secondB, previous) {
     const [barWidth, moveToX] = this.#calculateDimensions();
 
