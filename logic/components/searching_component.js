@@ -1,17 +1,23 @@
 export class SearchingVisualizer {
   constructor(...nums) {
+    this.nums = nums;
+    this.tiles = [];
+
+    this.createContainer();
+    this.createTiles();
+    this.renderTiles();
+  }
+
+  createContainer() {
     this.container = document.createElement('div');
     this.container.classList.add('container');
 
     this.board = document.createElement('div');
     this.board.classList.add('board');
+
     this.container.append(this.board);
-
-    this.nums = nums;
-    this.createTiles();
-    this.renderTiles();
   }
-
+  
   createTiles() {
     this.tiles = [];
 
