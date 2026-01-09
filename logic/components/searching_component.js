@@ -19,15 +19,14 @@ export class SearchingVisualizer {
   }
   
   createTiles() {
-    this.tiles = [];
+    this.tiles = this.nums.map(value => this.createTile(value));
+  }
 
-    for (let i = 0; i < this.nums.length; i++) {
-      const current = this.nums[i];
-      const el = document.createElement('div');
-      el.classList.add('tile');
-      el.textContent = current;
-      this.tiles.push(el);
-    }
+  createTile(value) {
+    const el = document.createElement('div');
+    el.classList.add('tile');
+    el.textContent = value;
+    return el;
   }
 
   renderTiles() {
