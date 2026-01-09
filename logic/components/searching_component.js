@@ -1,6 +1,6 @@
 export class SearchingVisualizer {
   constructor(...nums) {
-    this.nums = nums;
+    this.nums = nums.filter(num => typeof num === 'number');;
     this.tiles = [];
 
     this.createContainer();
